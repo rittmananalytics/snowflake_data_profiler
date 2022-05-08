@@ -1,0 +1,1397 @@
+schemaVersion: 1
+meta:
+  sourceVersionId: d888a14b-59e5-4c94-9882-1e303d8d534f # DO NOT CHANGE - Hex uses this to match up project versions when reimporting the file
+  description: null
+  projectId: e1fb2747-f3fc-4848-b3d4-601907ee602b # DO NOT CHANGE - Unique ID of the project from which this file was generated
+  title: Data Profiler
+  codeLanguage: PYTHON
+projectAssets:
+  dataConnections:
+    - dataConnectionId: 097c497b-3c43-4d47-9f76-6f33393f6bbd # Snowflake (snowflake)
+sharedAssets: {}
+cells:
+  - cellId: 4944025a-6fc5-470d-8b9a-eb156ad6edd3 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    cellType: CODE
+    config:
+      source: |-
+        from sklearn import ensemble
+        from sklearn import preprocessing
+  - cellId: d8ce97ae-db8b-4e5c-8713-2680ceb93117 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    cellType: CODE
+    config:
+      source: |-
+        from datetime import date
+        import numpy as np
+        import pandas as pd
+  - cellId: e6eae949-bfe9-45d6-b904-7dff8f162653 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: information_schema
+    cellType: SQL
+    config:
+      source: |-
+        select  table_catalog,
+                table_schema,
+                table_name
+        from "DEMO_DB"."INFORMATION_SCHEMA"."TABLES"
+      dataFrameCell: false
+      dataConnectionId: 097c497b-3c43-4d47-9f76-6f33393f6bbd
+      resultVariableName: tables_and_schemas
+      enableCache: false
+      runOnLoad: false
+      runOnSchedule: false
+      useRichDisplay: false
+      tableDisplayConfig: null
+  - cellId: 2f7df918-6c36-427c-8543-3ccdf0acbed6 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    cellType: TEXT
+    config:
+      richText:
+        - type: paragraph
+          children:
+            - text: Select the database, schema, table name and % sample to profile
+  - cellId: 6556386f-cec8-4af4-b109-299b8cce3aeb # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Database
+    cellType: INPUT
+    config:
+      inputType: DROPDOWN
+      name: database
+      outputType: DYNAMIC
+      options:
+        valueOptions:
+          dfName: tables_and_schemas
+          columnName: TABLE_CATALOG
+          variableName: tables_and_schemas['TABLE_CATALOG']
+      defaultValue: null
+  - cellId: eeded4ab-b130-4aa1-a989-89389a2343ed # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Table Schema
+    cellType: INPUT
+    config:
+      inputType: DROPDOWN
+      name: table_schema
+      outputType: DYNAMIC
+      options:
+        valueOptions:
+          dfName: tables_and_schemas
+          columnName: TABLE_SCHEMA
+          variableName: tables_and_schemas['TABLE_SCHEMA']
+      defaultValue: ANALYTICS
+  - cellId: 63e67feb-f61f-455c-a34d-42ea33297847 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Table Name
+    cellType: INPUT
+    config:
+      inputType: DROPDOWN
+      name: table_name
+      outputType: DYNAMIC
+      options:
+        valueOptions:
+          dfName: tables_and_schemas
+          columnName: TABLE_NAME
+          variableName: tables_and_schemas['TABLE_NAME']
+      defaultValue: SKIMS_THRIVE_PRODUCT_MASTER
+  - cellId: d777e720-b8de-4871-bab5-9559b88790a1 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Sample Size
+    cellType: INPUT
+    config:
+      inputType: SLIDER
+      name: sample_size
+      outputType: NUMBER
+      options:
+        min: 0
+        max: 100
+        step: 10
+      defaultValue: 40
+  - cellId: 2f1e82f7-9f8b-4203-9911-beca55486b8d # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Full Row Set
+    cellType: SQL
+    config:
+      source: SELECT * FROM {{ database | sqlsafe }}.{{table_schema | sqlsafe }}.{{table_name | sqlsafe }}
+      dataFrameCell: false
+      dataConnectionId: 097c497b-3c43-4d47-9f76-6f33393f6bbd
+      resultVariableName: all_rows
+      enableCache: false
+      runOnLoad: false
+      runOnSchedule: false
+      useRichDisplay: false
+      tableDisplayConfig: null
+  - cellId: 51525a77-ec28-4226-9edf-045749bbd2dd # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    cellType: TEXT
+    config:
+      richText:
+        - type: paragraph
+          children:
+            - text: Sample of up-to 20 random rows from table being profiled
+  - cellId: bf6078f9-d183-4b6e-9b4c-b932e0fc8865 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Sample Rows
+    cellType: SQL
+    config:
+      source: SELECT * FROM {{ database | sqlsafe }}.{{table_schema | sqlsafe }}.{{table_name | sqlsafe }} sample ({{sample_size}})
+      dataFrameCell: false
+      dataConnectionId: 097c497b-3c43-4d47-9f76-6f33393f6bbd
+      resultVariableName: sample_row_set
+      enableCache: false
+      runOnLoad: false
+      runOnSchedule: false
+      useRichDisplay: true
+      tableDisplayConfig:
+        pageSize: 12
+        hideIndex: false
+        defaultSortColumn: null
+        defaultSortDirection: ASC
+        conditionalFormatting: null
+        filters: null
+        columnProperties:
+          - originalName: CLICKS
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: PLATFORM
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: CAMPAIGN_NAME
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: COLLECTION
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MAPPING_CHANNEL
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: DATE_DAY
+            renameTo: null
+            size: 157
+            wrapText: null
+            displayFormat: null
+          - originalName: MAPPING_SUBCHANNEL
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: CAMPAIGN_ID
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MAPPING_VENDOR
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: AD_CHANNEL_TYPE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: SKU
+            renameTo: null
+            size: 160
+            wrapText: null
+            displayFormat: null
+          - originalName: ITEM_DISPLAY_NAME
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: CATEGORY
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: FABRIC
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: GARMENT_TYPE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: PRODUCT_CLASS
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: FIRST_ITEM_RECEIPT_DATE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: STYLE_NUMBER
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: LAST_ITEM_RECEIPT_DATE
+            renameTo: null
+            size: 215
+            wrapText: null
+            displayFormat: null
+          - originalName: BASE_PRICE_AMOUNT
+            renameTo: null
+            size: 191
+            wrapText: null
+            displayFormat: null
+          - originalName: TABLE_CATALOG
+            renameTo: null
+            size: 155
+            wrapText: null
+            displayFormat: null
+          - originalName: TABLE_SCHEMA
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: TABLE_TYPE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: TABLE_OWNER
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: TABLE_NAME
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: ROW_COUNT
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: RETENTION_TIME
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: SELF_REFERENCING_COLUMN_NAME
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: IS_TRANSIENT
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: REFERENCE_GENERATION
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: CLUSTERING_KEY
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: BYTES
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+  - cellId: 82f7ef3c-b537-4110-bf8a-29779ac1352e # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    cellType: CODE
+    config:
+      source: |
+        rows_sampled = sample_row_set.shape[0]
+        total_rows = all_rows.shape[0]
+  - cellId: 410f8668-4243-4683-aab8-9dd99810a98f # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    cellType: METRIC
+    config:
+      title: Sample Percentage
+      valueVariableName: sample_size
+      showComparison: false
+      comparisonType: null
+      comparisonVariableName: null
+      comparisonFormat: null
+      comparisonLabel: null
+      displayFormat:
+        format: NUMBER
+        currency: USD
+        columnType: NUMBER
+        numDecimalDigits: 0
+  - cellId: 63f24d38-6bde-4ec7-8a19-d2567240e9cc # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    cellType: METRIC
+    config:
+      title: Total Rows
+      valueVariableName: total_rows
+      showComparison: false
+      comparisonType: null
+      comparisonVariableName: null
+      comparisonFormat: null
+      comparisonLabel: null
+      displayFormat:
+        format: NUMBER
+        currency: USD
+        columnType: NUMBER
+        numDecimalDigits: 0
+  - cellId: 9b89a4da-82e8-4671-b1dc-bff0bebacf2c # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    cellType: METRIC
+    config:
+      title: Rows Sampled
+      valueVariableName: rows_sampled
+      showComparison: false
+      comparisonType: null
+      comparisonVariableName: null
+      comparisonFormat: null
+      comparisonLabel: null
+      displayFormat:
+        format: NUMBER
+        currency: USD
+        columnType: NUMBER
+        numDecimalDigits: 0
+  - cellId: 9fc73037-63bc-4e9c-84c5-3a28abfc4288 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Sample Rows
+    cellType: TABLE_DISPLAY
+    config:
+      dataFrameVariableName: sample_row_set
+      tableDisplayConfig:
+        pageSize: 20
+        hideIndex: true
+        defaultSortColumn: null
+        defaultSortDirection: ASC
+        conditionalFormatting: null
+        filters: null
+        columnProperties:
+          - originalName: MODULE_PK
+            renameTo: null
+            size: 254
+            wrapText: null
+            displayFormat: null
+          - originalName: SOURCE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MODULE_FIRST_BOOKING_BOOKING_DATE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MODULE_FIRST_BOOKING_ACCOUNT_BILLING_COUNTRY
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MODULE_ID
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MODULE_LAST_BOOKING_BOOKING_DATE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MODULE_FIRST_BOOKING_ACCOUNT_BILLING_STATE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: TENANT_ID
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MODULE_MOST_FREQUENT_BOOKING_ACCOUNT_BILLING_COUNTRY
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MODULE_LIFETIME_BOOKINGS
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MODULE_NAME
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MODULE_LAST_BOOKING_ACCOUNT_BILLING_COUNTRY
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MODULE_LAST_BOOKING_ACCOUNT_BILLING_STATE
+            renameTo: null
+            size: 359
+            wrapText: null
+            displayFormat: null
+          - originalName: MODULE_LAST_BOOKING_ACCOUNT_BILLING_CITY
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MODULE_FIRST_BOOKING_ACCOUNT_BILLING_POSTAL_CODE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MODULE_MOST_FREQUENT_BOOKING_ACCOUNT_BILLING_STATE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MODULE_MOST_FREQUENT_BOOKING_ACCOUNT_BILLING_CITY
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MODULE_FIRST_BOOKING_ACCOUNT_BILLING_CITY
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: CAMPAIGN_ID
+            renameTo: null
+            size: 187
+            wrapText: null
+            displayFormat: null
+          - originalName: PLATFORM
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: DATE_DAY
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MAPPING_VENDOR
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: AD_CHANNEL_TYPE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: SPEND
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: CAMPAIGN_NAME
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MAPPING_SUBCHANNEL
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: IMPRESSIONS
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: CLICKS
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MAPPING_CHANNEL
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: FIRST_ITEM_RECEIPT_DATE
+            renameTo: null
+            size: 221
+            wrapText: null
+            displayFormat: null
+          - originalName: CATEGORY
+            renameTo: null
+            size: 124
+            wrapText: null
+            displayFormat: null
+          - originalName: STYLE_NUMBER
+            renameTo: null
+            size: 154
+            wrapText: null
+            displayFormat: null
+          - originalName: COLLECTION
+            renameTo: null
+            size: 171
+            wrapText: null
+            displayFormat: null
+          - originalName: GARMENT_TYPE
+            renameTo: null
+            size: 153
+            wrapText: null
+            displayFormat: null
+          - originalName: ITEM_DISPLAY_NAME
+            renameTo: null
+            size: 381
+            wrapText: null
+            displayFormat: null
+          - originalName: PRODUCT_CLASS
+            renameTo: null
+            size: 158
+            wrapText: null
+            displayFormat: null
+          - originalName: FABRIC
+            renameTo: null
+            size: 106
+            wrapText: null
+            displayFormat: null
+          - originalName: LAST_ITEM_RECEIPT_DATE
+            renameTo: null
+            size: 215
+            wrapText: null
+            displayFormat: null
+          - originalName: BASE_PRICE_AMOUNT
+            renameTo: null
+            size: 191
+            wrapText: null
+            displayFormat: null
+          - originalName: SKU
+            renameTo: null
+            size: 169
+            wrapText: null
+            displayFormat: null
+          - originalName: TABLE_NAME
+            renameTo: null
+            size: 196
+            wrapText: null
+            displayFormat: null
+          - originalName: TABLE_SCHEMA
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: RETENTION_TIME
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: TABLE_TYPE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: BYTES
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: IS_TRANSIENT
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: TABLE_CATALOG
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: TABLE_OWNER
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: SELF_REFERENCING_COLUMN_NAME
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: ROW_COUNT
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: CLUSTERING_KEY
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: REFERENCE_GENERATION
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: USER_DEFINED_TYPE_CATALOG
+            renameTo: null
+            size: 241
+            wrapText: null
+            displayFormat: null
+          - originalName: USER_DEFINED_TYPE_SCHEMA
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: USER_DEFINED_TYPE_NAME
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+  - cellId: b2fa36de-a8ec-481e-ac62-0e80ce58983e # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    cellType: TEXT
+    config:
+      richText:
+        - type: paragraph
+          children:
+            - text: Calculated column stats from sampled rows
+  - cellId: c8d44232-5f6d-4af6-91f9-0f9b4671f5d3 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Table Profile
+    cellType: SQL
+    config:
+      source: |-
+        SELECT column_name,
+               table_rows::integer as values_sampled,
+               count_distinct_values::integer as unique_values_sample,
+               pct_unique::float as pct_unique,
+               pct_not_null::float as pct_not_null,
+               _min_value as min_value,
+               _max_value as max_value,
+               _avg_value as avg_value,
+               _most_frequent_value as mf_value,
+               _min_length as min_length,
+               _max_length as max_length,
+               _avr_length as avg_length
+          FROM
+         (
+          WITH
+            `table` AS (SELECT * FROM {{ database | sqlsafe }}.{{table_schema | sqlsafe }}.{{table_name | sqlsafe }} sample ({{sample_size}})),
+            table_as_json AS (SELECT OBJECT_CONSTRUCT(t.*)  FROM `table` t ),
+            pairs AS (select t.key as column_name, replace(replace(t.value,'"',''),'') column_value from table_as_json s, table(flatten(s.$1)) t ),
+            profile AS (
+              SELECT
+                split_part(replace('{{ database | sqlsafe }}.{{table_schema | sqlsafe }}.{{table_name | sqlsafe }}','"',''),'.',1 ) as table_catalog,
+                split_part(replace('{{ database | sqlsafe }}.{{table_schema | sqlsafe }}.{{table_name | sqlsafe }}','"',''),'.',2 ) as table_schema,
+                split_part(replace('{{ database | sqlsafe }}.{{table_schema | sqlsafe }}.{{table_name | sqlsafe }}','"',''),'.',3 ) as table_name,
+                column_name,
+                COUNT(*) AS table_rows,
+                COUNT(DISTINCT column_value) AS count_distinct_values,
+                (div0(COUNT(DISTINCT column_value),COUNT(*)))::float AS pct_unique,
+                case when column_value IS NULL then 1 else 0 end AS _nulls,
+                case when column_value IS NOT NULL then 1 else 0 end  AS _non_nulls,
+                (case when column_value IS NOT NULL then 1 else 0 end  / COUNT(*))::float AS pct_not_null,
+                min(column_value) as _min_value,
+                max(column_value) as _max_value,
+                avg(try_cast(column_value as number)) as _avg_value,
+                mode(column_value) AS _most_frequent_value,
+                MIN(LENGTH(column_value::varchar)) AS _min_length,
+                MAX(LENGTH(column_value::varchar)) AS _max_length,
+                ROUND(AVG(LENGTH(column_value::varchar))) AS _avr_length
+              FROM
+                pairs
+              WHERE
+                column_name <> ''
+                AND column_name NOT LIKE '%-%'
+              GROUP BY
+                1,2,3,4,8,9
+              ORDER BY
+                5 desc,1,2,3,4,8,9
+          )
+          SELECT
+            *
+          FROM
+            profile)
+          order by column_name
+      dataFrameCell: false
+      dataConnectionId: 097c497b-3c43-4d47-9f76-6f33393f6bbd
+      resultVariableName: query_result
+      enableCache: false
+      runOnLoad: false
+      runOnSchedule: false
+      useRichDisplay: true
+      tableDisplayConfig:
+        pageSize: 12
+        hideIndex: false
+        defaultSortColumn: null
+        defaultSortDirection: ASC
+        conditionalFormatting:
+          rulesets:
+            - type: RULES
+              rules:
+                - style: GREEN
+                  expression:
+                    op: EQ
+                    arg: "1"
+                - style: ORANGE
+                  expression:
+                    op: GTE
+                    arg: ".95"
+              columns:
+                type: INCLUDE
+                includedColumns:
+                  - PCT_UNIQUE
+            - type: RULES
+              rules:
+                - style: GREEN
+                  expression:
+                    op: EQ
+                    arg: "1"
+                - style: ORANGE
+                  expression:
+                    op: GTE
+                    arg: ".95"
+              columns:
+                type: INCLUDE
+                includedColumns:
+                  - PCT_NOT_NULL
+        filters: null
+        columnProperties:
+          - originalName: _MAX_VALUE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: TABLE_SCHEMA
+            renameTo: null
+            size: 153
+            wrapText: null
+            displayFormat: null
+          - originalName: TABLE_CATALOG
+            renameTo: null
+            size: 155
+            wrapText: null
+            displayFormat: null
+          - originalName: COLUMN_NAME
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: PCT_UNIQUE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat:
+              format: PERCENT
+              currency: USD
+              columnType: NUMBER
+              numDecimalDigits: 0
+          - originalName: TABLE_NAME
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: COUNT_DISTINCT_VALUES
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: _NULLS
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: PCT_NOT_NULL
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat:
+              format: PERCENT
+              currency: USD
+              columnType: NUMBER
+              numDecimalDigits: 0
+          - originalName: TABLE_ROWS
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: _MIN_VALUE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: _NON_NULLS
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: VALUES_SAMPLED
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: UNIQUE_VALUES_SAMPLE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MIN_VALUE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MAX_VALUE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: AVG_VALUE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MIN_LENGTH
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MF_VALUE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MAX_LENGTH
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: AVG_LENGTH
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+  - cellId: ba65bdfe-7a13-4ab7-bdc6-07f9635b7be3 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Table Profile
+    cellType: TABLE_DISPLAY
+    config:
+      dataFrameVariableName: query_result
+      tableDisplayConfig:
+        pageSize: 20
+        hideIndex: true
+        defaultSortColumn: null
+        defaultSortDirection: ASC
+        conditionalFormatting:
+          rulesets:
+            - type: RULES
+              rules:
+                - style: GREEN
+                  expression:
+                    op: EQ
+                    arg: "1"
+              columns:
+                type: INCLUDE
+                includedColumns:
+                  - PCT_UNIQUE
+            - type: RULES
+              rules:
+                - style: GREEN
+                  expression:
+                    op: EQ
+                    arg: "1"
+              columns:
+                type: INCLUDE
+                includedColumns:
+                  - PCT_NOT_NULL
+        filters: null
+        columnProperties:
+          - originalName: TABLE_CATALOG
+            renameTo: null
+            size: 155
+            wrapText: null
+            displayFormat: null
+          - originalName: TABLE_NAME
+            renameTo: null
+            size: 139
+            wrapText: null
+            displayFormat: null
+          - originalName: COLUMN_NAME
+            renameTo: null
+            size: 311
+            wrapText: null
+            displayFormat: null
+          - originalName: TABLE_SCHEMA
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: COUNT_DISTINCT_VALUES
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: _NULLS
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: TABLE_ROWS
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: _MIN_VALUE
+            renameTo: null
+            size: 254
+            wrapText: null
+            displayFormat: null
+          - originalName: _NON_NULLS
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: _MAX_VALUE
+            renameTo: null
+            size: 384
+            wrapText: null
+            displayFormat: null
+          - originalName: _MOST_FREQUENT_VALUE
+            renameTo: null
+            size: 342
+            wrapText: null
+            displayFormat: null
+          - originalName: _AVG_VALUE
+            renameTo: null
+            size: 135
+            wrapText: null
+            displayFormat: null
+          - originalName: VALUES_SAMPLED
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: UNIQUE_VALUES_SAMPLE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MAX_VALUE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: AVG_VALUE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MIN_VALUE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MIN_LENGTH
+            renameTo: null
+            size: 139
+            wrapText: null
+            displayFormat: null
+          - originalName: MAX_LENGTH
+            renameTo: null
+            size: 141
+            wrapText: null
+            displayFormat: null
+          - originalName: AVG_LENGTH
+            renameTo: null
+            size: 138
+            wrapText: null
+            displayFormat: null
+          - originalName: PCT_UNIQUE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat:
+              format: PERCENT
+              currency: USD
+              columnType: NUMBER
+              numDecimalDigits: 0
+          - originalName: PCT_NOT_NULL
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat:
+              format: PERCENT
+              currency: USD
+              columnType: NUMBER
+              numDecimalDigits: 0
+          - originalName: MF_VALUE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+  - cellId: ca04014e-c3ac-43f7-af4d-0d1e2b76fe19 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    cellType: TEXT
+    config:
+      richText:
+        - type: paragraph
+          children:
+            - text: Column Metadata from INFORMATION_SCHEMA
+  - cellId: dcd2e778-3a97-4dad-b4ca-22bd1b7749d9 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Information Schema
+    cellType: SQL
+    config:
+      source: |-
+        SELECT column_name,ordinal_position,column_default,is_nullable,data_type,character_maximum_length,numeric_precision,maximum_cardinality,comment from "{{ database | sqlsafe }}"."INFORMATION_SCHEMA"."COLUMNS"
+        where table_catalog = '{{ database | sqlsafe }}'
+        and table_schema = '{{table_schema | sqlsafe }}'
+        and table_name = '{{table_name | sqlsafe }}'
+        order by column_name
+      dataFrameCell: false
+      dataConnectionId: 097c497b-3c43-4d47-9f76-6f33393f6bbd
+      resultVariableName: query_result_3
+      enableCache: false
+      runOnLoad: false
+      runOnSchedule: false
+      useRichDisplay: false
+      tableDisplayConfig: null
+  - cellId: ce1393e4-c0b4-4652-b22d-05501c0a53a5 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Table Metadata
+    cellType: TABLE_DISPLAY
+    config:
+      dataFrameVariableName: query_result_3
+      tableDisplayConfig:
+        pageSize: 20
+        hideIndex: true
+        defaultSortColumn: null
+        defaultSortDirection: ASC
+        conditionalFormatting: null
+        filters: null
+        columnProperties:
+          - originalName: COLUMN_NAME
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: NUMERIC_PRECISION
+            renameTo: null
+            size: 187
+            wrapText: null
+            displayFormat: null
+          - originalName: TABLE_CATALOG
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: TABLE_NAME
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: TABLE_SCHEMA
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: COLUMN_DEFAULT
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: DATA_TYPE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: CHARACTER_MAXIMUM_LENGTH
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: IS_NULLABLE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: ORDINAL_POSITION
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat: null
+          - originalName: MAXIMUM_CARDINALITY
+            renameTo: null
+            size: 204
+            wrapText: null
+            displayFormat: null
+          - originalName: COMMENT
+            renameTo: null
+            size: 122
+            wrapText: null
+            displayFormat: null
+  - cellId: b55c68b8-860a-42ef-bea6-dcc97179abb5 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    cellType: CHART
+    config:
+      height: null
+      vegaSpec:
+        $schema: https://vega.github.io/schema/vega-lite/v5.json
+        layer:
+          - data:
+              name: layer00
+            mark:
+              type: bar
+              clip: true
+              tooltip: true
+              orient: horizontal
+              filled: true
+            encoding:
+              x:
+                field: PCT_UNIQUE
+                type: quantitative
+                scale:
+                  domainMax: 1
+                axis:
+                  format:
+                    columnType: NUMBER
+                    format: PERCENT
+                    numDecimalDigits: 2
+                    currency: USD
+                  formatType: NUMBER_FORMATTER
+              y:
+                field: COLUMN_NAME
+                type: nominal
+                sort: -x
+        resolve:
+          scale: {}
+        datasets:
+          layer00:
+            - name: dummy
+              value: 0
+      selectedLayerIndex: 0
+      metadata:
+        byLayer:
+          - selectedDataFrameVariableName: query_result
+  - cellId: 6c8ea140-df56-4bbd-b443-9f5c76ef4f80 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    cellType: CHART
+    config:
+      height: null
+      vegaSpec:
+        $schema: https://vega.github.io/schema/vega-lite/v5.json
+        layer:
+          - data:
+              name: layer00
+            mark:
+              tooltip: true
+              type: bar
+              clip: true
+              orient: horizontal
+            encoding:
+              x:
+                field: PCT_NOT_NULL
+                type: quantitative
+                axis:
+                  format:
+                    columnType: NUMBER
+                    format: PERCENT
+                    numDecimalDigits: 2
+                    currency: USD
+                  formatType: NUMBER_FORMATTER
+                scale:
+                  domainMax: 1
+                sort: ascending
+              y:
+                field: COLUMN_NAME
+                type: nominal
+        resolve:
+          scale: {}
+        datasets:
+          layer00:
+            - name: dummy
+              value: 0
+      selectedLayerIndex: 0
+      metadata:
+        byLayer:
+          - selectedDataFrameVariableName: query_result
+  - cellId: 857d96a2-4735-47bb-aba4-bf86c9e1113e # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    cellType: CHART
+    config:
+      height: null
+      vegaSpec:
+        $schema: https://vega.github.io/schema/vega-lite/v5.json
+        layer:
+          - data:
+              name: layer00
+            mark:
+              tooltip: true
+              type: bar
+              clip: true
+            encoding:
+              x:
+                field: VALUES_SAMPLED
+                type: quantitative
+              y:
+                field: COLUMN_NAME
+                type: nominal
+          - data:
+              name: layer00
+            mark:
+              type: bar
+              clip: true
+              tooltip: true
+            encoding:
+              x:
+                field: UNIQUE_VALUES_SAMPLE
+                type: quantitative
+              y:
+                field: COLUMN_NAME
+                type: nominal
+              color:
+                value: "#D13913"
+        resolve:
+          scale: {}
+        datasets:
+          layer00:
+            - name: dummy
+              value: 0
+      selectedLayerIndex: 1
+      metadata:
+        byLayer:
+          - selectedDataFrameVariableName: query_result
+          - selectedDataFrameVariableName: query_result
+appLayout:
+  fullWidth: true
+  visibleMetadataFields:
+    - NAME
+    - DESCRIPTION
+    - AUTHOR
+    - LAST_EDITED
+    - CATEGORIES
+    - STATUS
+    - TABLE_OF_CONTENTS
+  rows:
+    - columns:
+        - start: 0
+          end: 120
+          elements:
+            - type: CELL
+              cellId: 2f7df918-6c36-427c-8543-3ccdf0acbed6
+              height: null
+              showLabel: true
+    - columns:
+        - start: 0
+          end: 30
+          elements:
+            - type: CELL
+              cellId: 6556386f-cec8-4af4-b109-299b8cce3aeb
+              height: null
+              showLabel: true
+        - start: 30
+          end: 60
+          elements:
+            - type: CELL
+              cellId: eeded4ab-b130-4aa1-a989-89389a2343ed
+              height: null
+              showLabel: true
+        - start: 60
+          end: 90
+          elements:
+            - type: CELL
+              cellId: 63e67feb-f61f-455c-a34d-42ea33297847
+              height: null
+              showLabel: true
+        - start: 90
+          end: 120
+          elements:
+            - type: CELL
+              cellId: d777e720-b8de-4871-bab5-9559b88790a1
+              height: null
+              showLabel: true
+    - columns:
+        - start: 0
+          end: 30
+          elements:
+            - type: CELL
+              cellId: 63f24d38-6bde-4ec7-8a19-d2567240e9cc
+              height: null
+              showLabel: true
+        - start: 30
+          end: 60
+          elements:
+            - type: CELL
+              cellId: 410f8668-4243-4683-aab8-9dd99810a98f
+              height: null
+              showLabel: true
+        - start: 60
+          end: 90
+          elements:
+            - type: CELL
+              cellId: 9b89a4da-82e8-4671-b1dc-bff0bebacf2c
+              height: null
+              showLabel: true
+    - columns:
+        - start: 0
+          end: 120
+          elements:
+            - type: CELL
+              cellId: 51525a77-ec28-4226-9edf-045749bbd2dd
+              height: null
+              showLabel: true
+    - columns:
+        - start: 0
+          end: 120
+          elements:
+            - type: CELL
+              cellId: 9fc73037-63bc-4e9c-84c5-3a28abfc4288
+              height: null
+              showLabel: true
+    - columns:
+        - start: 0
+          end: 40
+          elements:
+            - type: CELL
+              cellId: b55c68b8-860a-42ef-bea6-dcc97179abb5
+              height: null
+              showLabel: true
+        - start: 40
+          end: 80
+          elements:
+            - type: CELL
+              cellId: 6c8ea140-df56-4bbd-b443-9f5c76ef4f80
+              height: null
+              showLabel: true
+        - start: 80
+          end: 120
+          elements:
+            - type: CELL
+              cellId: 857d96a2-4735-47bb-aba4-bf86c9e1113e
+              height: null
+              showLabel: true
+    - columns:
+        - start: 0
+          end: 120
+          elements:
+            - type: CELL
+              cellId: b2fa36de-a8ec-481e-ac62-0e80ce58983e
+              height: null
+              showLabel: true
+    - columns:
+        - start: 0
+          end: 120
+          elements:
+            - type: CELL
+              cellId: ba65bdfe-7a13-4ab7-bdc6-07f9635b7be3
+              height: null
+              showLabel: true
+    - columns:
+        - start: 0
+          end: 120
+          elements:
+            - type: CELL
+              cellId: ca04014e-c3ac-43f7-af4d-0d1e2b76fe19
+              height: null
+              showLabel: true
+    - columns:
+        - start: 0
+          end: 120
+          elements:
+            - type: CELL
+              cellId: ce1393e4-c0b4-4652-b22d-05501c0a53a5
+              height: null
+              showLabel: true
