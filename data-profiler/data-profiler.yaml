@@ -1,13 +1,13 @@
 schemaVersion: 1
 meta:
-  sourceVersionId: d888a14b-59e5-4c94-9882-1e303d8d534f # DO NOT CHANGE - Hex uses this to match up project versions when reimporting the file
+  sourceVersionId: a9177eea-6661-41a3-bd74-f8f50e8c0699 # DO NOT CHANGE - Hex uses this to match up project versions when reimporting the file
   description: null
   projectId: e1fb2747-f3fc-4848-b3d4-601907ee602b # DO NOT CHANGE - Unique ID of the project from which this file was generated
   title: Data Profiler
   codeLanguage: PYTHON
 projectAssets:
   dataConnections:
-    - dataConnectionId: 097c497b-3c43-4d47-9f76-6f33393f6bbd # Snowflake (snowflake)
+    - dataConnectionId: 8ea95d87-4cc9-4219-9e53-254b8380afc0 # Snowflake (snowflake)
 sharedAssets: {}
 cells:
   - cellId: 4944025a-6fc5-470d-8b9a-eb156ad6edd3 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
@@ -35,7 +35,7 @@ cells:
                 table_name
         from "DEMO_DB"."INFORMATION_SCHEMA"."TABLES"
       dataFrameCell: false
-      dataConnectionId: 097c497b-3c43-4d47-9f76-6f33393f6bbd
+      dataConnectionId: 8ea95d87-4cc9-4219-9e53-254b8380afc0
       resultVariableName: tables_and_schemas
       enableCache: false
       runOnLoad: false
@@ -50,12 +50,12 @@ cells:
         - type: paragraph
           children:
             - text: Select the database, schema, table name and % sample to profile
-  - cellId: 6556386f-cec8-4af4-b109-299b8cce3aeb # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
-    cellLabel: Database
+  - cellId: 78114ea5-42ce-4688-9d3c-59255ebdd72a # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: available_databases
     cellType: INPUT
     config:
       inputType: DROPDOWN
-      name: database
+      name: selected_database
       outputType: DYNAMIC
       options:
         valueOptions:
@@ -105,9 +105,9 @@ cells:
     cellLabel: Full Row Set
     cellType: SQL
     config:
-      source: SELECT * FROM {{ database | sqlsafe }}.{{table_schema | sqlsafe }}.{{table_name | sqlsafe }}
+      source: SELECT * FROM {{ selected_database | sqlsafe }}.{{table_schema | sqlsafe }}.{{table_name | sqlsafe }}
       dataFrameCell: false
-      dataConnectionId: 097c497b-3c43-4d47-9f76-6f33393f6bbd
+      dataConnectionId: 8ea95d87-4cc9-4219-9e53-254b8380afc0
       resultVariableName: all_rows
       enableCache: false
       runOnLoad: false
@@ -126,9 +126,9 @@ cells:
     cellLabel: Sample Rows
     cellType: SQL
     config:
-      source: SELECT * FROM {{ database | sqlsafe }}.{{table_schema | sqlsafe }}.{{table_name | sqlsafe }} sample ({{sample_size}})
+      source: SELECT * FROM {{ selected_database | sqlsafe }}.{{table_schema | sqlsafe }}.{{table_name | sqlsafe }} sample ({{sample_size}})
       dataFrameCell: false
-      dataConnectionId: 097c497b-3c43-4d47-9f76-6f33393f6bbd
+      dataConnectionId: 8ea95d87-4cc9-4219-9e53-254b8380afc0
       resultVariableName: sample_row_set
       enableCache: false
       runOnLoad: false
@@ -309,12 +309,14 @@ cells:
       source: |
         rows_sampled = sample_row_set.shape[0]
         total_rows = all_rows.shape[0]
-  - cellId: 410f8668-4243-4683-aab8-9dd99810a98f # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+        sample_percentage = sample_size/100
+        total_columns = len(sample_row_set.columns)
+  - cellId: 56583c56-1ceb-4af2-a053-d635307474d0 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
     cellLabel: null
     cellType: METRIC
     config:
-      title: Sample Percentage
-      valueVariableName: sample_size
+      title: Total Columns
+      valueVariableName: total_columns
       showComparison: false
       comparisonType: null
       comparisonVariableName: null
@@ -341,12 +343,12 @@ cells:
         currency: USD
         columnType: NUMBER
         numDecimalDigits: 0
-  - cellId: 9b89a4da-82e8-4671-b1dc-bff0bebacf2c # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+  - cellId: 410f8668-4243-4683-aab8-9dd99810a98f # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
     cellLabel: null
     cellType: METRIC
     config:
-      title: Rows Sampled
-      valueVariableName: rows_sampled
+      title: Sample Percentage
+      valueVariableName: sample_size
       showComparison: false
       comparisonType: null
       comparisonVariableName: null
@@ -354,6 +356,22 @@ cells:
       comparisonLabel: null
       displayFormat:
         format: NUMBER
+        currency: USD
+        columnType: NUMBER
+        numDecimalDigits: 0
+  - cellId: 9b89a4da-82e8-4671-b1dc-bff0bebacf2c # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    cellType: METRIC
+    config:
+      title: Rows Sampled
+      valueVariableName: sample_percentage
+      showComparison: false
+      comparisonType: null
+      comparisonVariableName: null
+      comparisonFormat: null
+      comparisonLabel: null
+      displayFormat:
+        format: PERCENT
         currency: USD
         columnType: NUMBER
         numDecimalDigits: 0
@@ -645,6 +663,11 @@ cells:
             size: 120
             wrapText: null
             displayFormat: null
+          - originalName: IS_INSERTABLE_INTO
+            renameTo: null
+            size: 187
+            wrapText: null
+            displayFormat: null
   - cellId: b2fa36de-a8ec-481e-ac62-0e80ce58983e # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
     cellLabel: null
     cellType: TEXT
@@ -673,14 +696,14 @@ cells:
           FROM
          (
           WITH
-            `table` AS (SELECT * FROM {{ database | sqlsafe }}.{{table_schema | sqlsafe }}.{{table_name | sqlsafe }} sample ({{sample_size}})),
+            `table` AS (SELECT * FROM {{ selected_database | sqlsafe }}.{{table_schema | sqlsafe }}.{{table_name | sqlsafe }} sample ({{sample_size}})),
             table_as_json AS (SELECT OBJECT_CONSTRUCT(t.*)  FROM `table` t ),
             pairs AS (select t.key as column_name, replace(replace(t.value,'"',''),'') column_value from table_as_json s, table(flatten(s.$1)) t ),
             profile AS (
               SELECT
-                split_part(replace('{{ database | sqlsafe }}.{{table_schema | sqlsafe }}.{{table_name | sqlsafe }}','"',''),'.',1 ) as table_catalog,
-                split_part(replace('{{ database | sqlsafe }}.{{table_schema | sqlsafe }}.{{table_name | sqlsafe }}','"',''),'.',2 ) as table_schema,
-                split_part(replace('{{ database | sqlsafe }}.{{table_schema | sqlsafe }}.{{table_name | sqlsafe }}','"',''),'.',3 ) as table_name,
+                split_part(replace('{{ selected_database | sqlsafe }}.{{table_schema | sqlsafe }}.{{table_name | sqlsafe }}','"',''),'.',1 ) as table_catalog,
+                split_part(replace('{{ selected_database | sqlsafe }}.{{table_schema | sqlsafe }}.{{table_name | sqlsafe }}','"',''),'.',2 ) as table_schema,
+                split_part(replace('{{ selected_database | sqlsafe }}.{{table_schema | sqlsafe }}.{{table_name | sqlsafe }}','"',''),'.',3 ) as table_name,
                 column_name,
                 COUNT(*) AS table_rows,
                 COUNT(DISTINCT column_value) AS count_distinct_values,
@@ -711,7 +734,7 @@ cells:
             profile)
           order by column_name
       dataFrameCell: false
-      dataConnectionId: 097c497b-3c43-4d47-9f76-6f33393f6bbd
+      dataConnectionId: 8ea95d87-4cc9-4219-9e53-254b8380afc0
       resultVariableName: query_result
       enableCache: false
       runOnLoad: false
@@ -1037,13 +1060,13 @@ cells:
     cellType: SQL
     config:
       source: |-
-        SELECT column_name,ordinal_position,column_default,is_nullable,data_type,character_maximum_length,numeric_precision,maximum_cardinality,comment from "{{ database | sqlsafe }}"."INFORMATION_SCHEMA"."COLUMNS"
-        where table_catalog = '{{ database | sqlsafe }}'
+        SELECT column_name,ordinal_position,column_default,is_nullable,data_type,character_maximum_length,numeric_precision,maximum_cardinality,comment from "{{ selected_database | sqlsafe }}"."INFORMATION_SCHEMA"."COLUMNS"
+        where table_catalog = '{{ selected_database | sqlsafe }}'
         and table_schema = '{{table_schema | sqlsafe }}'
         and table_name = '{{table_name | sqlsafe }}'
         order by column_name
       dataFrameCell: false
-      dataConnectionId: 097c497b-3c43-4d47-9f76-6f33393f6bbd
+      dataConnectionId: 8ea95d87-4cc9-4219-9e53-254b8380afc0
       resultVariableName: query_result_3
       enableCache: false
       runOnLoad: false
@@ -1279,7 +1302,7 @@ appLayout:
           end: 30
           elements:
             - type: CELL
-              cellId: 6556386f-cec8-4af4-b109-299b8cce3aeb
+              cellId: 78114ea5-42ce-4688-9d3c-59255ebdd72a
               height: null
               showLabel: true
         - start: 30
@@ -1308,18 +1331,25 @@ appLayout:
           end: 30
           elements:
             - type: CELL
-              cellId: 63f24d38-6bde-4ec7-8a19-d2567240e9cc
+              cellId: 56583c56-1ceb-4af2-a053-d635307474d0
               height: null
               showLabel: true
         - start: 30
           end: 60
           elements:
             - type: CELL
-              cellId: 410f8668-4243-4683-aab8-9dd99810a98f
+              cellId: 63f24d38-6bde-4ec7-8a19-d2567240e9cc
               height: null
               showLabel: true
         - start: 60
           end: 90
+          elements:
+            - type: CELL
+              cellId: 410f8668-4243-4683-aab8-9dd99810a98f
+              height: null
+              showLabel: true
+        - start: 90
+          end: 120
           elements:
             - type: CELL
               cellId: 9b89a4da-82e8-4671-b1dc-bff0bebacf2c
