@@ -1,13 +1,13 @@
 schemaVersion: 1
 meta:
-  sourceVersionId: 16ab3f48-9e90-4696-a061-1ad825c95959 # DO NOT CHANGE - Hex uses this to match up project versions when reimporting the file
+  sourceVersionId: e40533cd-e801-4dce-bbd8-6f78ba30c8d3 # DO NOT CHANGE - Hex uses this to match up project versions when reimporting the file
   description: null
   projectId: e1fb2747-f3fc-4848-b3d4-601907ee602b # DO NOT CHANGE - Unique ID of the project from which this file was generated
   title: Data Profiler
   codeLanguage: PYTHON
 projectAssets:
   dataConnections:
-    - dataConnectionId: 023ab5e8-1832-4d9c-b2ac-7566ffd700bb # Snowflake (snowflake)
+    - dataConnectionId: 45102ff5-bc99-4d7f-af10-532cc60c4eae # Snowflake (snowflake)
 sharedAssets: {}
 cells:
   - cellId: 4944025a-6fc5-470d-8b9a-eb156ad6edd3 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
@@ -33,13 +33,26 @@ cells:
         select database_name as table_catalog
         from "INFORMATION_SCHEMA"."DATABASES";
       dataFrameCell: false
-      dataConnectionId: 023ab5e8-1832-4d9c-b2ac-7566ffd700bb
+      dataConnectionId: 45102ff5-bc99-4d7f-af10-532cc60c4eae
       resultVariableName: instance_databases
       enableCache: false
       runOnLoad: false
       runOnSchedule: false
       useRichDisplay: false
       tableDisplayConfig: null
+  - cellId: 78114ea5-42ce-4688-9d3c-59255ebdd72a # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: available_databases
+    cellType: INPUT
+    config:
+      inputType: DROPDOWN
+      name: selected_database
+      outputType: DYNAMIC
+      options:
+        valueOptions:
+          dfName: instance_databases
+          columnName: TABLE_CATALOG
+          variableName: instance_databases['TABLE_CATALOG']
+      defaultValue: FINANCE_WAREHOUSE_DEV
   - cellId: e6eae949-bfe9-45d6-b904-7dff8f162653 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
     cellLabel: information_schema
     cellType: SQL
@@ -48,9 +61,9 @@ cells:
         select  table_catalog,
                 table_schema,
                 table_name
-        from "DEMO_DB"."INFORMATION_SCHEMA"."TABLES"
+        from "{{ selected_database | sqlsafe }}"."INFORMATION_SCHEMA"."TABLES"
       dataFrameCell: false
-      dataConnectionId: 023ab5e8-1832-4d9c-b2ac-7566ffd700bb
+      dataConnectionId: 45102ff5-bc99-4d7f-af10-532cc60c4eae
       resultVariableName: tables_and_schemas
       enableCache: false
       runOnLoad: false
@@ -65,19 +78,6 @@ cells:
         - type: paragraph
           children:
             - text: Select the database, schema, table name and % sample to profile
-  - cellId: 78114ea5-42ce-4688-9d3c-59255ebdd72a # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
-    cellLabel: available_databases
-    cellType: INPUT
-    config:
-      inputType: DROPDOWN
-      name: selected_database
-      outputType: DYNAMIC
-      options:
-        valueOptions:
-          dfName: instance_databases
-          columnName: TABLE_CATALOG
-          variableName: instance_databases['TABLE_CATALOG']
-      defaultValue: FINANCE_WAREHOUSE_DEV
   - cellId: eeded4ab-b130-4aa1-a989-89389a2343ed # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
     cellLabel: Table Schema
     cellType: INPUT
@@ -122,7 +122,7 @@ cells:
     config:
       source: SELECT * FROM {{ selected_database | sqlsafe }}.{{table_schema | sqlsafe }}.{{table_name | sqlsafe }}
       dataFrameCell: false
-      dataConnectionId: 023ab5e8-1832-4d9c-b2ac-7566ffd700bb
+      dataConnectionId: 45102ff5-bc99-4d7f-af10-532cc60c4eae
       resultVariableName: all_rows
       enableCache: false
       runOnLoad: false
@@ -143,7 +143,7 @@ cells:
     config:
       source: SELECT * FROM {{ selected_database | sqlsafe }}.{{table_schema | sqlsafe }}.{{table_name | sqlsafe }} sample ({{sample_size}})
       dataFrameCell: false
-      dataConnectionId: 023ab5e8-1832-4d9c-b2ac-7566ffd700bb
+      dataConnectionId: 45102ff5-bc99-4d7f-af10-532cc60c4eae
       resultVariableName: sample_row_set
       enableCache: false
       runOnLoad: false
@@ -749,7 +749,7 @@ cells:
             profile)
           order by column_name
       dataFrameCell: false
-      dataConnectionId: 023ab5e8-1832-4d9c-b2ac-7566ffd700bb
+      dataConnectionId: 45102ff5-bc99-4d7f-af10-532cc60c4eae
       resultVariableName: query_result
       enableCache: false
       runOnLoad: false
@@ -792,15 +792,6 @@ cells:
                   - PCT_NOT_NULL
         filters: null
         columnProperties:
-          - originalName: PCT_UNIQUE
-            renameTo: null
-            size: 120
-            wrapText: null
-            displayFormat:
-              format: PERCENT
-              currency: USD
-              columnType: NUMBER
-              numDecimalDigits: 0
           - originalName: _MAX_VALUE
             renameTo: null
             size: 120
@@ -821,6 +812,15 @@ cells:
             size: 120
             wrapText: null
             displayFormat: null
+          - originalName: PCT_UNIQUE
+            renameTo: null
+            size: 120
+            wrapText: null
+            displayFormat:
+              format: PERCENT
+              currency: USD
+              columnType: NUMBER
+              numDecimalDigits: 0
           - originalName: TABLE_NAME
             renameTo: null
             size: 120
@@ -1081,7 +1081,7 @@ cells:
         and table_name = '{{table_name | sqlsafe }}'
         order by column_name
       dataFrameCell: false
-      dataConnectionId: 023ab5e8-1832-4d9c-b2ac-7566ffd700bb
+      dataConnectionId: 45102ff5-bc99-4d7f-af10-532cc60c4eae
       resultVariableName: query_result_3
       enableCache: false
       runOnLoad: false
