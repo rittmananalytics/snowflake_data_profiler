@@ -4,7 +4,7 @@ Repo contains a [Hex data app](https://hex.tech/) to browse and profile the cont
 
 ![](img/data_profiler_screenshot.png)
 
-As well as showing basic schema information and metadata from the INFORMATION_SCHEMA, this notebook runs our Snowflake data profiling SQL as detailed below (note the {{table_name | sqlsafe }} and other Jinja variables used to insert the selected database, schema and table name values from the app into the SQL query):
+As well as showing basic schema information and metadata from the INFORMATION_SCHEMA, this notebook runs our Snowflake data profiling SQL as detailed below (note the ``{{table_name | sqlsafe }}`` and other Jinja variables used to insert the selected database, schema and table name values from the app into the SQL query):
 
 ```
 SELECT column_name,
