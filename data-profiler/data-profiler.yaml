@@ -1,22 +1,15 @@
 schemaVersion: 1
 meta:
-  sourceVersionId: b171a782-eff5-4a04-94f3-9994db0a00cd # DO NOT CHANGE - Hex uses this to match up project versions when reimporting the file
+  sourceVersionId: 67b16616-daf7-4fb9-9000-b74ca2b516f0 # DO NOT CHANGE - Hex uses this to match up project versions when reimporting the file
   description: null
   projectId: e1fb2747-f3fc-4848-b3d4-601907ee602b # DO NOT CHANGE - Unique ID of the project from which this file was generated
   title: Data Profiler
   codeLanguage: PYTHON
 projectAssets:
   dataConnections:
-    - dataConnectionId: d2ff6803-576c-428a-8f76-f025cf8737c4 # Snowflake (snowflake)
+    - dataConnectionId: ccd5b8d8-17db-4841-b3d2-dc7b8f10ffb6 # Snowflake (snowflake)
 sharedAssets: {}
 cells:
-  - cellId: 4944025a-6fc5-470d-8b9a-eb156ad6edd3 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
-    cellLabel: null
-    cellType: CODE
-    config:
-      source: |-
-        from sklearn import ensemble
-        from sklearn import preprocessing
   - cellId: d8ce97ae-db8b-4e5c-8713-2680ceb93117 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
     cellLabel: null
     cellType: CODE
@@ -33,7 +26,7 @@ cells:
         select database_name as table_catalog
         from "INFORMATION_SCHEMA"."DATABASES";
       dataFrameCell: false
-      dataConnectionId: d2ff6803-576c-428a-8f76-f025cf8737c4
+      dataConnectionId: ccd5b8d8-17db-4841-b3d2-dc7b8f10ffb6
       resultVariableName: instance_databases
       enableCache: false
       runOnLoad: false
@@ -64,7 +57,7 @@ cells:
                 table_name
         from "{{ selected_database | sqlsafe }}"."INFORMATION_SCHEMA"."TABLES"
       dataFrameCell: false
-      dataConnectionId: d2ff6803-576c-428a-8f76-f025cf8737c4
+      dataConnectionId: ccd5b8d8-17db-4841-b3d2-dc7b8f10ffb6
       resultVariableName: tables_and_schemas
       enableCache: false
       runOnLoad: false
@@ -124,7 +117,7 @@ cells:
     config:
       source: SELECT * FROM {{ selected_database | sqlsafe }}.{{table_schema | sqlsafe }}.{{table_name | sqlsafe }}
       dataFrameCell: false
-      dataConnectionId: d2ff6803-576c-428a-8f76-f025cf8737c4
+      dataConnectionId: ccd5b8d8-17db-4841-b3d2-dc7b8f10ffb6
       resultVariableName: all_rows
       enableCache: false
       runOnLoad: false
@@ -146,7 +139,7 @@ cells:
     config:
       source: SELECT * FROM {{ selected_database | sqlsafe }}.{{table_schema | sqlsafe }}.{{table_name | sqlsafe }} sample ({{sample_size}})
       dataFrameCell: false
-      dataConnectionId: d2ff6803-576c-428a-8f76-f025cf8737c4
+      dataConnectionId: ccd5b8d8-17db-4841-b3d2-dc7b8f10ffb6
       resultVariableName: sample_row_set
       enableCache: false
       runOnLoad: false
@@ -753,7 +746,7 @@ cells:
             profile)
           order by column_name
       dataFrameCell: false
-      dataConnectionId: d2ff6803-576c-428a-8f76-f025cf8737c4
+      dataConnectionId: ccd5b8d8-17db-4841-b3d2-dc7b8f10ffb6
       resultVariableName: query_result
       enableCache: false
       runOnLoad: false
@@ -1086,7 +1079,7 @@ cells:
         and table_name = '{{table_name | sqlsafe }}'
         order by column_name
       dataFrameCell: false
-      dataConnectionId: d2ff6803-576c-428a-8f76-f025cf8737c4
+      dataConnectionId: ccd5b8d8-17db-4841-b3d2-dc7b8f10ffb6
       resultVariableName: query_result_3
       enableCache: false
       runOnLoad: false
